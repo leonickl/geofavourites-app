@@ -1,4 +1,10 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Popup,
+    useMapEvents,
+} from "react-leaflet";
 import L from "leaflet";
 import MapUpdater from "./MapUpdater";
 import "leaflet/dist/leaflet.css";
@@ -9,7 +15,7 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import usePosition from "./hooks/usePosition";
 import { useEffect, useState } from "react";
 
-import data from "../data.json";
+import { addItem, getItems, type MarkerData } from "./utils/storage";
 
 // Set default icon (otherwise it won't show up in many builds)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -20,7 +26,33 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
+function MarkerManager({
+    markers,
+    onAdd,
+}: {
+    markers: MarkerData[];
+    onAdd: (position: [number, number]) => void;
+}) {
+    useMapEvents({
+        click(e) {
+            onAdd([e.latlng.lat, e.latlng.lng]);
+        },
+    });
+
+    return (
+        <>
+            {markers.map((m) => (
+                <Marker key={m.id} position={[m.lat, m.lng]}>
+                    <Popup>{m.name}</Popup>
+                </Marker>
+            ))}
+        </>
+    );
+}
+
 export default function MapView() {
+    const [markers, setMarkers] = useState<MarkerData[]>([]);
+
     const { location } = usePosition();
 
     const [center, setCenter] = useState<[number, number]>([51.505, -0.09]);
@@ -34,6 +66,28 @@ export default function MapView() {
             toCurrentPosition();
         }
     }, [location]);
+
+    useEffect(() => {
+        setMarkers(getItems());
+    }, []);
+
+    function addMarker(position: [number, number]) {
+        const name = prompt("Enter a name for this marker:");
+
+        if (!name || name.trim() === "") {
+            return;
+        }
+
+        const newMarker: MarkerData = {
+            name,
+            lat: position[0],
+            lng: position[1],
+        };
+
+        setMarkers([...markers, newMarker]);
+
+        addItem(newMarker);
+    }
 
     return (
         <>
@@ -53,13 +107,15 @@ export default function MapView() {
                     <Popup>Your current position</Popup>
                 </Marker>
 
-                {data.map((record) => (
+                {markers.map((record) => (
                     <Marker position={[record.lat, record.lng]}>
                         <Popup>{record.name}</Popup>
                     </Marker>
                 ))}
 
                 <MapUpdater center={center} />
+
+                <MarkerManager markers={markers} onAdd={addMarker} />
             </MapContainer>
         </>
     );
