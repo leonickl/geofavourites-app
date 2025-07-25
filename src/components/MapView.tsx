@@ -12,7 +12,7 @@ import "leaflet/dist/leaflet.css";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import usePosition from "./hooks/usePosition";
+import usePosition from "../hooks/usePosition";
 import { useEffect, useState } from "react";
 
 import {
@@ -22,7 +22,7 @@ import {
     type MarkerData,
     workQueue,
     updateList,
-} from "./utils/storage";
+} from "../utils/storage";
 import { toast } from "react-toastify";
 
 // Set default icon (otherwise it won't show up in many builds)
@@ -63,7 +63,7 @@ export default function MapView() {
 
     const { location } = usePosition();
 
-    const [center, setCenter] = useState<[number, number]>([48.6, 13.5])
+    const [center, setCenter] = useState<[number, number]>([48.6, 13.5]);
 
     function toCurrentPosition() {
         if (!location) {

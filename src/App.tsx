@@ -1,5 +1,5 @@
 import { ToastContainer } from "react-toastify";
-import MapView from "./MapView";
+import MapView from "./components/MapView";
 
 export default function App() {
     return (
