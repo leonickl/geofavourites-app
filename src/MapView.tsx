@@ -15,7 +15,13 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import usePosition from "./hooks/usePosition";
 import { useEffect, useState } from "react";
 
-import { addItem, getItems, type MarkerData } from "./utils/storage";
+import {
+    saveMarker,
+    getMarkers,
+    type MarkerData,
+    pullItems,
+    workQueue,
+} from "./utils/storage";
 
 // Set default icon (otherwise it won't show up in many builds)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -35,7 +41,7 @@ function MarkerManager({
 }) {
     useMapEvents({
         click(e) {
-            onAdd([e.latlng.lat, e.latlng.lng]);
+            onAdd([e.latlng?.lat, e.latlng?.lng]);
         },
     });
 
@@ -68,7 +74,7 @@ export default function MapView() {
     }, [location]);
 
     useEffect(() => {
-        setMarkers(getItems());
+        setMarkers(getMarkers());
     }, []);
 
     function addMarker(position: [number, number]) {
@@ -86,12 +92,14 @@ export default function MapView() {
 
         setMarkers([...markers, newMarker]);
 
-        addItem(newMarker);
+        saveMarker(newMarker);
     }
 
     return (
         <>
             <button onClick={toCurrentPosition}>To Current Position</button>
+            <button onClick={pullItems}>Pull</button>
+            <button onClick={workQueue}>Retry Unsaved</button>
 
             <MapContainer
                 center={center}
