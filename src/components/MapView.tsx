@@ -12,9 +12,9 @@ import "leaflet/dist/leaflet.css";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
 import usePosition from "../hooks/usePosition";
 import { useEffect, useState } from "react";
-
 import {
     saveMarker,
     allMarkers,
@@ -25,9 +25,10 @@ import {
 } from "../utils/storage";
 import { toast } from "react-toastify";
 
-// Set default icon (otherwise it won't show up in many builds)
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+import "./styles.css";
 
+// Fix Leaflet's marker icon paths
+delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: markerIcon2x,
     iconUrl: markerIcon,
@@ -43,7 +44,7 @@ function MarkerManager({
 }) {
     useMapEvents({
         click(e) {
-            onAdd([e.latlng?.lat, e.latlng?.lng]);
+            onAdd([e.latlng.lat, e.latlng.lng]);
         },
     });
 
@@ -57,19 +58,15 @@ function MarkerManager({
         </>
     );
 }
-
 export default function MapView() {
     const [markers, setMarkers] = useState<MarkerData[]>([]);
-
     const { location } = usePosition();
-
     const [center, setCenter] = useState<[number, number]>([48.6, 13.5]);
 
     function toCurrentPosition() {
         if (!location) {
             return toast.error("Error reading location");
         }
-
         setCenter(location as [number, number]);
     }
 
@@ -85,10 +82,7 @@ export default function MapView() {
 
     function addMarker(position: [number, number]) {
         const name = prompt("Enter a name for this marker:");
-
-        if (!name || name.trim() === "") {
-            return;
-        }
+        if (!name || name.trim() === "") return;
 
         const newMarker: MarkerData = {
             name,
@@ -96,21 +90,22 @@ export default function MapView() {
             lng: position[1],
         };
 
-        setMarkers((old) => [...old, newMarker]);
-
+        setMarkers((prev) => [...prev, newMarker]);
         saveMarker(newMarker);
     }
 
     return (
-        <>
-            <button onClick={toCurrentPosition}>To Current Position</button>
-            <button onClick={updateList}>Update List</button>
-            <button onClick={workQueue}>Retry Unsaved</button>
+        <div className="app-container">
+            <div className="menu-bar">
+                <button onClick={toCurrentPosition}>Current Position</button>
+                <button onClick={updateList}>Update List</button>
+                <button onClick={workQueue}>Retry Unsaved</button>
+            </div>
 
             <MapContainer
                 center={center}
                 zoom={13}
-                style={{ height: "90%", width: "100%" }}
+                className="leaflet-container"
             >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
@@ -122,15 +117,14 @@ export default function MapView() {
                 </Marker>
 
                 {markers.map((record) => (
-                    <Marker position={[record.lat, record.lng]}>
+                    <Marker key={record.id} position={[record.lat, record.lng]}>
                         <Popup>{record.name}</Popup>
                     </Marker>
                 ))}
 
                 <MapUpdater center={center} />
-
                 <MarkerManager markers={markers} onAdd={addMarker} />
             </MapContainer>
-        </>
+        </div>
     );
 }
