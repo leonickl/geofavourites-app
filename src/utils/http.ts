@@ -1,16 +1,20 @@
+import { getCredentials } from "./credentials";
 import type { MarkerData } from "./storage";
 
-const PROXY_SERVER = 'https://geoproxy.leonickl.de'
-const AUTH_HEADER = 'Basic ' + btoa(`${import.meta.env.VITE_NC_USER}:${import.meta.env.VITE_NC_PASS}`);
+const credentials = getCredentials()!;
+
+const PROXY_SERVER = "https://geoproxy.leonickl.de";
+const AUTH_HEADER =
+    "Basic " + btoa(`${credentials.name}:${credentials.password}`);
 const headers = {
     Authorization: AUTH_HEADER,
-    'X-NC-Url': import.meta.env.VITE_NC_URL,
-    'Content-Type': 'application/json'
-}
+    "X-NC-Url": credentials.url,
+    "Content-Type": "application/json",
+};
 
 export async function pullItems(): Promise<MarkerData[]> {
     const res = await fetch(`${PROXY_SERVER}?path=favorites`, {
-        method: 'GET',
+        method: "GET",
         headers,
     });
 
@@ -25,7 +29,7 @@ export async function pullItems(): Promise<MarkerData[]> {
 
 export async function pushMarker(marker: MarkerData): Promise<MarkerData> {
     const res = await fetch(`${PROXY_SERVER}?path=favorites`, {
-        method: 'POST',
+        method: "POST",
         headers,
         body: JSON.stringify(marker),
     });

@@ -25,7 +25,6 @@ import {
 } from "../utils/storage";
 import { toast } from "react-toastify";
 
-import "./styles.css";
 
 // Fix Leaflet's marker icon paths
 delete (L.Icon.Default.prototype as any)._getIconUrl;
