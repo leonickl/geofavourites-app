@@ -12,9 +12,17 @@ export default function App() {
     const [password, setPassword] = useState("");
     const [credentials, setCredentials] = useState(getCredentials());
 
+    const credentialsOk =
+        credentials &&
+        credentials.url &&
+        credentials.name &&
+        credentials.password;
+
     useEffect(() => {
-        updateList();
-        workQueue();
+        if (credentialsOk) {
+            updateList();
+            workQueue();
+        }
     }, []);
 
     function handleSubmit(e: React.FormEvent) {
@@ -28,12 +36,7 @@ export default function App() {
         }
     }
 
-    if (
-        !credentials ||
-        !credentials.url ||
-        !credentials.name ||
-        !credentials.password
-    ) {
+    if (!credentialsOk) {
         return (
             <div className="login-container">
                 <form className="login-form" onSubmit={handleSubmit}>

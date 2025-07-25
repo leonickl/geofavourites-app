@@ -25,7 +25,6 @@ import {
 } from "../utils/storage";
 import { toast } from "react-toastify";
 
-
 // Fix Leaflet's marker icon paths
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -51,7 +50,7 @@ function MarkerManager({
         <>
             {markers.map((m) => (
                 <Marker key={m.id} position={[m.lat, m.lng]}>
-                    <Popup>{m.name}</Popup>
+                    <Popup>{m.name ?? "---"}</Popup>
                 </Marker>
             ))}
         </>
@@ -81,6 +80,7 @@ export default function MapView() {
 
     function addMarker(position: [number, number]) {
         const name = prompt("Enter a name for this marker:");
+
         if (!name || name.trim() === "") return;
 
         const newMarker: MarkerData = {
@@ -116,10 +116,7 @@ export default function MapView() {
                 </Marker>
 
                 {markers.map((record) => (
-                    <Marker
-                        key={record.id}
-                        position={[record.lat, record.lng]}
-                    >
+                    <Marker key={record.id} position={[record.lat, record.lng]}>
                         <Popup>{record.name}</Popup>
                     </Marker>
                 ))}
