@@ -117,7 +117,10 @@ export default function MapView() {
                 </Marker>
 
                 {markers.map((record) => (
-                    <Marker key={record.id} position={[record.lat, record.lng]}>
+                    <Marker
+                        key={record.id}
+                        position={[record.lat, record.lng]}
+                    >
                         <Popup>{record.name}</Popup>
                     </Marker>
                 ))}
