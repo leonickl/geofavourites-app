@@ -17,10 +17,11 @@ import { useEffect, useState } from "react";
 
 import {
     saveMarker,
-    getMarkers,
+    allMarkers,
+    allFromQueue,
     type MarkerData,
-    pullItems,
     workQueue,
+    updateList,
 } from "./utils/storage";
 
 // Set default icon (otherwise it won't show up in many builds)
@@ -74,7 +75,7 @@ export default function MapView() {
     }, [location]);
 
     useEffect(() => {
-        setMarkers(getMarkers());
+        setMarkers([...allMarkers(), ...allFromQueue()]);
     }, []);
 
     function addMarker(position: [number, number]) {
@@ -90,7 +91,7 @@ export default function MapView() {
             lng: position[1],
         };
 
-        setMarkers([...markers, newMarker]);
+        setMarkers(old => [...old, newMarker]);
 
         saveMarker(newMarker);
     }
@@ -98,7 +99,7 @@ export default function MapView() {
     return (
         <>
             <button onClick={toCurrentPosition}>To Current Position</button>
-            <button onClick={pullItems}>Pull</button>
+            <button onClick={updateList}>Update List</button>
             <button onClick={workQueue}>Retry Unsaved</button>
 
             <MapContainer
