@@ -23,6 +23,7 @@ import {
     workQueue,
     updateList,
 } from "./utils/storage";
+import { toast } from "react-toastify";
 
 // Set default icon (otherwise it won't show up in many builds)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -62,9 +63,13 @@ export default function MapView() {
 
     const { location } = usePosition();
 
-    const [center, setCenter] = useState<[number, number]>([51.505, -0.09]);
+    const [center, setCenter] = useState<[number, number]>([48.6, 13.5])
 
     function toCurrentPosition() {
+        if (!location) {
+            return toast.error("Error reading location");
+        }
+
         setCenter(location as [number, number]);
     }
 
@@ -91,7 +96,7 @@ export default function MapView() {
             lng: position[1],
         };
 
-        setMarkers(old => [...old, newMarker]);
+        setMarkers((old) => [...old, newMarker]);
 
         saveMarker(newMarker);
     }
