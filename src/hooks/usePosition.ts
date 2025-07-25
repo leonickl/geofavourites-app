@@ -20,5 +20,9 @@ export default function usePosition () {
         );
     }, []);
 
+    useEffect(() => {
+        console.error(error)
+    }, [error])
+
     return { location, error };
 };
