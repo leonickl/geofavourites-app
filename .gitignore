@@ -25,3 +25,6 @@ dist-ssr
 
 # sample data
 data.json
+
+# Environment
+.env
