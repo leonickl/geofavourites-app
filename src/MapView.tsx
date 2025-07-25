@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L, { type LatLngExpression } from "leaflet";
+import L from "leaflet";
 import MapUpdater from "./MapUpdater";
 import "leaflet/dist/leaflet.css";
 
@@ -8,6 +8,8 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import usePosition from "./hooks/usePosition";
 import { useEffect, useState } from "react";
+
+import data from "../data.json";
 
 // Set default icon (otherwise it won't show up in many builds)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -50,6 +52,12 @@ export default function MapView() {
                 <Marker position={center}>
                     <Popup>Your current position</Popup>
                 </Marker>
+
+                {data.map((record) => (
+                    <Marker position={[record.lat, record.lng]}>
+                        <Popup>{record.name}</Popup>
+                    </Marker>
+                ))}
 
                 <MapUpdater center={center} />
             </MapContainer>
