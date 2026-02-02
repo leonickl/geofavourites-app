@@ -15,4 +15,9 @@ export default defineConfig({
             manifest: undefined,
         }),
     ],
+    preview: {
+        allowedHosts: [
+            "geofavourites.leonickl.de"
+        ]
+    }
 });
